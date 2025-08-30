@@ -1,0 +1,23 @@
+{
+  "name": "mill-list-js",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd frontend && npm install && npm run build",
+    "build:server": "cd backend && npm install --only=production",
+
+    "render-build": "npm run build",
+    "start": "cd backend && npm start",
+
+    "server:dev": "cd backend && npm run dev",
+    "client:dev": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  }
+}
