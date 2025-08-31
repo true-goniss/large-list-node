@@ -3,9 +3,13 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { buildOrderIndex, intersectSets } = require('./utils');
-const { tokenize } = require('./Indexing/Indexing');
+const Indexing = require('./Search/Indexing');
+const Searcher = require('./Search/Searcher');
+
+const logger = require('./Log/Logger');
+
 const DataGenerator = require('./Data/DataGenerator');
-const Indexing = require('./Indexing/Indexing');
+
 
 const TOTAL_ITEMS = 1000000;
 const PAGE_SIZE = 20;
@@ -29,7 +33,7 @@ function initSession(session) {
         session.order = Array.from({ length: TOTAL_ITEMS }, (_, i) => i + 1);
         session.selected = [];
         session.initialized = true;
-        console.log('Session initialized');
+        logger.Log('Session initialized');
     }
 }
 
@@ -45,11 +49,17 @@ start();
 app.get('/api/items', (req, res) => {
     initSession(req.session);
 
-    const search = req.query.search || '';
+    const textQuery = req.query.search || '';
     const offset = parseInt(req.query.offset) || 0;
     const limit = Math.min(parseInt(req.query.limit) || PAGE_SIZE, 100);
 
-    const searchResult = Indexing.searchItems(search, req.session, fullData, indexes);
+    const searchResult = Searcher.Search(
+        textQuery,
+        req.session?.order,
+        fullData,
+        indexes
+    );
+
     let itemIds = searchResult.ids || [];
     const totalFound = searchResult.totalFound || 0;
 
@@ -57,7 +67,7 @@ app.get('/api/items', (req, res) => {
         itemIds = [];
     }
 
-    if (itemIds.length === 0 && search) {
+    if (itemIds.length === 0 && textQuery) {
         return res.json({ items: [], hasMore: false, totalFound: 0 });
     }
 
@@ -140,5 +150,5 @@ app.post('/api/regenerate', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    logger.Log(`Server running on port ${PORT}`);
 });

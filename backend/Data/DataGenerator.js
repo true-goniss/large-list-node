@@ -1,4 +1,4 @@
-﻿const { Logger } = require('../Logger/Logger');
+﻿const logger = require('../Log/Logger');
 
 const {
     getRandomCity,
@@ -16,8 +16,6 @@ const {
 } = require('./constants');
 
 class DataGenerator {
-
-    static logger = new Logger();
 
     static Generate(TOTAL_ITEMS, logging = true) {
         const fullData = new Array(TOTAL_ITEMS);
@@ -40,7 +38,7 @@ class DataGenerator {
             };
         }
 
-        this.logger.Log(`Сгенерировано ${TOTAL_ITEMS} элементов в памяти`, logging);
+        logger.Log(`Сгенерировано ${TOTAL_ITEMS} элементов в памяти`, logging);
 
         return fullData;
     }
