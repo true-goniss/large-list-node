@@ -13,8 +13,9 @@ class Indexing {
 
     static logger = new Logger();
 
-    static async BuildIndexes(fullData, PREFIX_MAX = 6, NGRAM = 3, logging = true) {
-        if (logging) this.logger.Log('Building indexes with disk-based storage...', logging);
+    static async BuildIndexes(fullData, PREFIX_MAX = 6, NGRAM = 3, BATCH_SIZE = 5000, logging = true) {
+
+        this.logger.Log('Building indexes with disk-based storage...', logging);
 
         const startTime = performance.now();
         const memoryBefore = process.memoryUsage();
@@ -24,7 +25,6 @@ class Indexing {
             fs.mkdirSync(tempDir, { recursive: true });
         }
 
-        const BATCH_SIZE = 5000;
         let processed = 0;
 
         while (processed < fullData.length) {
@@ -56,17 +56,15 @@ class Indexing {
         const endTime = performance.now();
         const memoryAfter = process.memoryUsage();
 
-        if (logging) {
-            this.logger.Log(`Indexing completed in ${(endTime - startTime).toFixed(2)}ms`);
-            this.logger.Log('Memory usage:');
-            this.logger.Log(`  Heap used: ${Math.round((memoryAfter.heapUsed - memoryBefore.heapUsed) / 1024 / 1024)} MB delta`);
-            this.logger.Log(`  RSS: ${Math.round((memoryAfter.rss - memoryBefore.rss) / 1024 / 1024)} MB delta`);
-
-            this.logger.Log('Index sizes:');
-            this.logger.Log(`  Tokens: ${indexes.searchIndex.size}`);
-            this.logger.Log(`  Prefixes: ${indexes.prefixIndex.size}`);
-            this.logger.Log(`  N-grams: ${indexes.ngramIndex.size}`);
-        }
+        this.logger.Log(`Indexing completed in ${(endTime - startTime).toFixed(2)}ms`, logging);
+        this.logger.Log('Memory usage:');
+        this.logger.Log(`  Heap used: ${Math.round((memoryAfter.heapUsed - memoryBefore.heapUsed) / 1024 / 1024)} MB delta`, logging);
+        this.logger.Log(`  RSS: ${Math.round((memoryAfter.rss - memoryBefore.rss) / 1024 / 1024)} MB delta`, logging);
+        this.logger.Log('Index sizes:', logging);
+        this.logger.Log(`  Tokens: ${indexes.searchIndex.size}`, logging);
+        this.logger.Log(`  Prefixes: ${indexes.prefixIndex.size}`, logging);
+        this.logger.Log(`  N-grams: ${indexes.ngramIndex.size}`, logging);
+        
 
         return indexes;
     }
