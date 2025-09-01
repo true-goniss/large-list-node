@@ -18,12 +18,6 @@ const CONFIG = {
 
 class Indexing {
 
-    params = {
-        PREFIX_MAX: 6,
-        NGRAM: 3,
-        BATCH_SIZE: 5000
-    }
-
     static async BuildIndexes(
         fullData,
         config = CONFIG,
