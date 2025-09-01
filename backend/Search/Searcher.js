@@ -19,6 +19,23 @@ class Searcher {
         }
 
         try {
+
+            const trimmedQuery = textQuery.trim();
+
+            // поиск по ID (только цифры)
+            if (/^\d+$/.test(trimmedQuery)) {
+                const searchId = parseInt(trimmedQuery);
+
+                if (searchId >= 1 && searchId <= fullData.length) {
+                    return {
+                        ids: [searchId],
+                        totalFound: 1
+                    };
+                } else {
+                    return { ids: [], totalFound: 0 };
+                }
+            }
+
             const resultSet = this._SearchIdsForQuery(textQuery, indexes, NGRAM);
 
             if (resultSet === null) {
